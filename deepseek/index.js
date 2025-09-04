@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -9,20 +10,15 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 
 // DeepSeek API configuration
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 
-// Health check endpoint
+// Health check endpoint - now serves the HTML page
 app.get('/', (req, res) => {
-  res.json({
-    message: 'DeepSeek API Server is running!',
-    endpoints: {
-      chat: 'POST /api/chat',
-      health: 'GET /health'
-    }
-  });
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Health endpoint
@@ -82,8 +78,8 @@ app.post('/api/chat', async (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Visit http://localhost:${PORT} to test the API`);
+  console.log(`DeepSeek server running on port ${PORT}`);
+  console.log(`Visit http://localhost:${PORT} to access the web interface`);
 });
 
 module.exports = app;
